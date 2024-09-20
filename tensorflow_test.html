@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TensorFlow.js Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+</head>
+
+<body>
+    <h1>TensorFlow.js Test</h1>
+    <div id="output"></div>
+    <script>
+        // 訓練數據 y = 2x - 1
+        const x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        const y = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
+
+        // 建立一個線性模型
+        const model = tf.sequential();
+
+        // 添加一個全連接層，神經元設定 1，每個輸入樣本設定為一維
+        model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
+
+        // 編譯模型
+        model.compile({ loss: 'meanSquaredError', optimizer: 'sgd' });
+
+        // 將訓練數據轉換為二維
+        // 有 10 個樣本，模型每次僅接收一個輸入數據
+        const inputTensor = tf.tensor2d(x, [10, 1]);
+        const outputTensor = tf.tensor2d(y, [10, 1]);
+
+        // 訓練模型，指定訓練過程將重複 100 次
+        model.fit(inputTensor, outputTensor, { epochs: 100 }).then(() => {
+            // 使用模型進行預測，預測的輸入值是 5
+            const prediction = model.predict(tf.tensor2d([5], [1, 1]));
+
+            // 顯示預測值
+            prediction.array().then(array => {
+                document.getElementById('output').innerText = `預測當 x = 5 時， y 值 = 2x -1 \n y = ${array[0][0]}`;
+            });
+        });
+    </script>
+</body>
+
+</html>
